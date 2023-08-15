@@ -2,6 +2,8 @@ So I missed a few days worth of notes so here I Start fresh
 
 Where I am at today. Today I need to figure out why my builds are not joining the domain.
 
+Log: C:\Windows\debug\NetSetup.log
+
 TS Step: "Apply Network Settings" is not applying the domain. I need to export a log but unfortunately I'm late on my notes and I already fixed it.
 - New Group "Join Domain" - WMI condition "Select * From Win32_ComputerSystem Where PartofDomain = 'FALSE'
 --"Set Dynam Variables" - OSDJoinSkipReboot = False, OSDJoinType = 0
@@ -29,3 +31,105 @@ I am also glad I forked Gary's Garytown repo and used the TS from https://garyto
 I also Need to create a proper answer file, Not sure if using Gary's is messing with my lab. I did check each linked github file to confirm if I needed to modify it or not. Maybe I just want more customizations.
 
 The boot time between the FIRST TS Step "Restart Computer" is kind of obnoxious. I want faster build times.
+
+Back to Domain issues. So fixed by adding in the follow up steps, time reduced after fixing OU issue (as detailed in log)
+
+With domain join issues fixed... onto Answer Files.
+
+Answer File:
+https://learn.microsoft.com/en-us/windows-hardware/get-started/adk-install
+https://www.youtube.com/watch?v=6jxg4YvBHao
+https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/wsim/create-or-open-an-answer-file
+--Maybe I'll come back here when I know more as this seems very detailed/specific. May need more resources to reference.
+
+Did some messing with starting a default GPO for the "VM Lab Builds" OU. I should look at STIGS (spelling?) https://www.stigviewer.com/stig/microsoft_windows_11/
+
+ANNNNND ADD BRAIN KICK IN...
+
+Added 2 scripts to CM
+
+CHeck RSAT Install && Install RSAT missign features
+https://techcommunity.microsoft.com/t5/windows-11/how-to-install-or-uninstall-rsat-in-windows-11/m-p/3273590
+
+C:\Windows\CCM\Logs\Scripts.log
+
+#1
+Get-WindowsCapability -Name RSAT* -Online | Select-Object -Property DisplayName, State
+
+#2
+# Get RSAT items that are not currently installed:
+$install = Get-WindowsCapability -Online |
+  Where-Object {$_.Name -like "RSAT*" -AND $_.State -eq "NotPresent"}
+
+# Install the RSAT items that meet the filter:
+foreach ($item in $install) {
+  try {
+    Add-WindowsCapability -Online -Name $item.name
+  }
+  catch [System.Exception] {
+    Write-Warning -Message $_.Exception.Message
+  }
+}
+
+Number 2 of which failed.
+WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c WARNING: Add-WindowsCapability failed. Error code = 0x8024500c
+
+
+Probably because I disabled a bunch of windows update items from GPO... Undid those Win updates settings and attempting script again. TO be fair I wasn't planning RSAT before doing the GPOs.
+- Allow Automatic Updates Immediate Installation
+- Configure Automatic Updates
+- Do not connect to any windows update internet locations
+- Remove access to use all windows update features
+
+The Script guid (found on the scripts from CM, May need to enable the column) will be listed in the scripts.log file.
+
+Parsing the Script Execution Message ...
+Script Guid: DCA96690-C732-442E-ACBE-578B5423542B
+Run the PowerShell Script: [DCA96690-C732-442E-ACBE-578B5423542B]
+PowerShell path: C:\WINDOWS\system32\WindowsPowerShell\v1.0\PowerShell.exe
+Launching the PowerShell.exe for Script [DCA96690-C732-442E-ACBE-578B5423542B]
+Creating the task object...
+Executing the task...
+Running PS script...
+Started script handler job.
+Execution task is kicked off.
+--(did not exist before, but as example)
+Running PS script...
+Creating state message...
+Sending script state message (fast): {FC500048-67D4-4E18-A245-81834D6EB298}
+Result are sent for ScriptGuid: E774FF80-78F4-497E-B89A-DEA00E91ED4E and TaskID: {FC500048-67D4-4E18-A245-81834D6EB298}
+
+VM12 - Going to test build times... (I do like the way Company handles logging, the HTML Report, and all those extra details.)
+Start: 10:40
+End: 11:00 
+20min, not too bad. I am using a TS Step for a packaged Win11 install vs the OSD from the TS import.
+-Lawl, First attempt failed... 'System.OutOfMemoryException' - Again, need more RAM.
+
+Should have just used Prajwal https://www.prajwaldesai.com/how-to-install-rsat-on-windows-11/
+CM Script output:
+{
+  "Path": null,
+  "Online": true,
+  "WinPath": null,
+  "SysDrivePath": null,
+  "RestartNeeded": false,
+  "LogPath": "C:\\WINDOWS\\Logs\\DISM\\dism.log",
+  "ScratchDirectory": null,
+  "LogLevel": 2
+}
+
+It worked but in a weird way. there's no "folder" in the start menu like most people are used to. 
+
+https://learn.microsoft.com/en-us/troubleshoot/windows-server/system-management-components/remote-server-administration-tools#rsat-for-windows-10-version-1809-or-later-versions
+RSAT for Windows 10, version 1809 or later versions
+
+*Note
+You can't use the Turn Windows features on and off dialog from the Control Panel
+
+Installing the RSAT Tools for Windows 10 version 1809 and later version is slightly different from earlier versions. RSAT is now part of the Operating System an can be installed via Optional Features.
+
+
+https://www.manishbangia.com/deploy-rsat-using-sccm/
+https://www.systanddeploy.com/2020/01/install-rsat-on-windows-10-through.html - Ehhhhh, extra steps with XML? Idk
+
+RSAT is going, not well. Uninstall works fine though. Should make sure I enable logging or something.
