@@ -1,0 +1,25 @@
+So I missed a few days worth of notes so here I Start fresh
+
+Where I am at today. Today I need to figure out why my builds are not joining the domain.
+
+TS Step: "Apply Network Settings" is not applying the domain. I need to export a log but unfortunately I'm late on my notes and I already fixed it.
+- New Group "Join Domain" - WMI condition "Select * From Win32_ComputerSystem Where PartofDomain = 'FALSE'
+--"Set Dynam Variables" - OSDJoinSkipReboot = False, OSDJoinType = 0
+--"Join Domain or Workgroup"
+
+Notes - I feel stupid, I missed setting up a container VS OU.... While THe mahcine did join the domain after nearly 20MIN!!!!!!
+
+"08/14/2023 17:06:48:809 NetpGetComputerObjectDn: Specified path 'CN=Computers,DC=corp,DC=contoso,DC=com' is not an OU"
+"08/14/2023 17:08:39:184 NetpCreateComputerObjectInDs: NetpGetComputerObjectDn failed: 0x2"
+"08/14/2023 17:08:39:184 NetpProvisionComputerAccount: LDAP creation failed: 0x2"
+"08/14/2023 17:08:39:184 NetpProvisionComputerAccount: LDAP creation failed: 0x2"
+"08/14/2023 17:08:39:184 NetpProvisionComputerAccount: Cannot retry downlevel, specifying OU is not supported"
+
+Using https://www.moderndeployment.com/correct-domain-join-account-permissions/ as ref to set OU permissions.
+
+I don't know yet if I have something miss configured or not yet regarding TS Step: "Apply Network Settings" TBD
+
+With the new updated OU configured and the TS Steps updated to reference that new OU. Starting Build on VM11 (VM10 was successful, though long)
+
+
+
