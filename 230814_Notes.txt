@@ -21,5 +21,11 @@ I don't know yet if I have something miss configured or not yet regarding TS Ste
 
 With the new updated OU configured and the TS Steps updated to reference that new OU. Starting Build on VM11 (VM10 was successful, though long)
 
+(Mental Notes) - Need MORE Storage on phys desktop AND more RAM. - I should MAX out RAM, and install 2x 2TB NVMe drives.
 
+I am also happy to state that while my VM10 did join the domain, it was in Entra devices rather fast, and some bit later (need more info) it was in Intune.
+I am also glad I forked Gary's Garytown repo and used the TS from https://garytown.com/osdcloud-configmgr-integrated-win11-osd --I am very good at build off what others have started, but doing mine from scratch... eh, not so much.
 
+I also Need to create a proper answer file, Not sure if using Gary's is messing with my lab. I did check each linked github file to confirm if I needed to modify it or not. Maybe I just want more customizations.
+
+The boot time between the FIRST TS Step "Restart Computer" is kind of obnoxious. I want faster build times.
