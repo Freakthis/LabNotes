@@ -1,0 +1,25 @@
+LAPS
+
+LAPS was actually very easy to setup.
+Started with https://www.youtube.com/watch?v=1P2iPWZCMLk&pp=ygURaW50dW5lIGxhcHMgc2V0dXA%3D
+https://learn.microsoft.com/en-us/windows-server/identity/laps/laps-overview
+
+You want to log into Entra/Azure
+Devices > Device Settings > Scroll down and "Enable Azure AD Local Administrator Password Solution (LAPS) (Preview)
+Log into Intune
+Endpoint Security > Account Protection > Create New Policy > Plat - Win10+ | Profile - LAPS
+Configure the Policy and wait mayne 10-15min. GO get a drink/snack and come back.
+
+Easy. Entra/Azure portal (under devices) has a section for LAPS, which shows ALL DEVICES ina  list with their passwords. 
+Intune, you can select the devices and go select a device and view the left column options for "Local Admin Password"
+
+I really did not expect LAPS to be so EASY.
+-----
+
+Looking at the Bitlocker configs in Intune.... Those seem a lot more complicated due to to HOW MANY configurable options there are. I'll skip for now.
+
+
+Checking out some Windows Compliance settings. Create first one. 
+Requires: Secure Boot, TPM.
+
+Working.
