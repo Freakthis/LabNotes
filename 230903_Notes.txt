@@ -1,0 +1,7 @@
+Sept 3rd.
+Broke my CM VM a week or so ago. THought I had a backup and went to revert the VM and Kaput. I'm currently making backups of certain items to redo the onprem lab.
+
+Deleted the devices and users from Intune and deleted the VMs to crecreate the ONPREM Lab setup.
+
+Following directions from the Lab guide. Step #47 - It's late, be back later.
+
