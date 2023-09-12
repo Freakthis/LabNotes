@@ -1,0 +1,21 @@
+$tsenv = New-Object -ComObject Microsoft.SMS.TSEnvironment; 
+$GithubURL = $tsenv.value('GitHubURL'); 
+$GithubLoc = "/garytown/master/OSD/CloudOSD/gather.ps1"; 
+powershell.exe -executionpolicy bypass -command "Invoke-Expression (Invoke-RestMethod $GithubURL$GithubLoc)"
+
+
+powershell.exe; $tsenv = New-Object -ComObject Microsoft.SMS.TSEnvironment; $GitURL = $tsenv.value('GitHubURL'); $gitfile = "gather.ps1"; powershell.exe -executionpolicy bypass -command "Invoke-Expression (Invoke-RestMethod $GitURL$gitfile)"
+
+powershell.exe; $tsenv = New-Object -ComObject Microsoft.SMS.TSEnvironment; $GitURL = $tsenv.value('GitHubURL'); $gitfile = "gather.ps1"; Invoke-Expression (Invoke-RestMethod $GitURL$gitfile)
+
+powershell.exe -command "$tsenv = New-Object -ComObject Microsoft.SMS.TSEnvironment"; $GitURL = $tsenv.value('GitHubURL'); $gitfile = "gather.ps1"; Invoke-Expression (Invoke-RestMethod "$GitURL$gitfile")
+
+powershell.exe; $tsenv = New-Object -ComObject Microsoft.SMS.TSEnvironment; $GitURL = $tsenv.value('GitHubURL'); Invoke-Expression (Invoke-RestMethod $GitURLgather.ps1)
+
+powershell.exe -executionpolicy bypass -command "Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/gwblok/garytown/master/OSD/CloudOSD/gather.ps1')"
+
+
+
+powershell.exe -ExecutionPolicy ByPass -Command "$TSEnv = New-Object -ComObject Microsoft.SMS.TSEnvironment; $GitURL = $tsenv.value('GitURL'); $gitfile = 'gather.ps1'; Invoke-Expression (Invoke-RestMethod $GitURL$gitfile)"
+^^
+** -- Invoke-RestMethod is CASE SENSITIVE
